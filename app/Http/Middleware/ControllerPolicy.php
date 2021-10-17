@@ -28,14 +28,7 @@ class ControllerPolicy
     {
         $this->regesterPolicies();
 
-        $action = explode('@', FacadesRequest::route()->getAction()['controller']);
-
-        if(Gate::allows(class_basename($action[0]).'.'.$action[1])){
-            ControllerPolicy::$isFromBlade = true;
-            return $next($request);
-        }
-
-        abort(403);
+        return $next($request);
     }
 
     public function regesterPolicies(){
@@ -64,5 +57,13 @@ class ControllerPolicy
                 }
             }
         }
+
+        $action = explode('@', FacadesRequest::route()->getAction()['controller']);
+
+        if(!Gate::allows(class_basename($action[0]).'.'.$action[1])){
+            abort(403);
+        }
+
+        ControllerPolicy::$isFromBlade = true;
     }
 }
